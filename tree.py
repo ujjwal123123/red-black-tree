@@ -21,12 +21,12 @@ class NodeData:
 
 class TreeNode:
     def __init__(self, key: int, data, color: Color | None = None) -> None:
-        self.left: Optional["TreeNode"] = None
-        self.right: Optional["TreeNode"] = None
+        self.left: "TreeNode" | None = None
+        self.right: "TreeNode" | None = None
         self.key: int = key
-        self.data: None | NodeData = data
+        self.data: NodeData | None = data
         self.color: Color | None = color
-        self.p = None
+        self.p: "TreeNode" | None = None
 
 
 # sentinel = TreeNode(None, None)
@@ -37,12 +37,41 @@ class Tree:
         self.root_node: TreeNode | None = None
         self.sentinel = TreeNode(-1, None, Color.BLACK)
 
+    def left_rotate(self, x: TreeNode) -> TreeNode:
+        y = x.right
+        if y is self.sentinel:
+            return x
+        assert y is not None
+
+        beta = y.left
+        if beta is not self.sentinel:
+            beta.p = x
+            x.right = beta
+        else:
+            x.right = self.sentinel
+
+            # x is left child
+            if x.p.left == x:
+                x.p.left = y
+            # x is right child
+            if x.p.right == x:
+                x.p.right = y
+
+        y.p = x.p
+        x.p = y
+        y.left = x
+
+        if self.root_node is x:
+            self.root_node = y
+
+        return y
+
     def insert(self, key: int, value: None | NodeData) -> TreeNode:
         # binary search
         parent: None | TreeNode = None
         current: None | TreeNode = self.root_node
 
-        while current:
+        while current and current is not self.sentinel:
             parent = current
             if current.key > key:
                 current = current.left
@@ -52,6 +81,10 @@ class Tree:
                 return current
 
         new_node = TreeNode(key, value)
+        new_node.left = self.sentinel
+        new_node.right = self.sentinel
+        if parent:
+            new_node.p = parent
         if not parent:
             self.root_node = new_node
         elif parent.key < key:
@@ -60,28 +93,53 @@ class Tree:
             parent.left = new_node
         return new_node
 
-    def visualize_binary_tree(self):
+    def visualize_binary_tree(self, file_name):
+        counter = 0
         dot = graphviz.Digraph()
         dot.node(str(self.root_node.key))
 
         def add_nodes_edges(node):
-            if node.left:
+            nonlocal counter
+            if node.left is not self.sentinel:
                 dot.node(str(node.left.key))
                 dot.edge(str(node.key), str(node.left.key))
                 add_nodes_edges(node.left)
-            if node.right:
+            elif node.left is self.sentinel:
+                counter += 1
+                dot.node("stn " + str(counter), _attributes={"shape": "box"})
+                dot.edge(
+                    str(node.key),
+                    "stn " + str(counter),
+                    _attributes={"style": "dashed"},
+                )
+            if node.right is not self.sentinel:
                 dot.node(str(node.right.key))
                 dot.edge(str(node.key), str(node.right.key))
                 add_nodes_edges(node.right)
+            elif node.right is self.sentinel:
+                counter += 1
+                dot.node("stn " + str(counter), _attributes={"shape": "box"})
+                dot.edge(
+                    str(node.key),
+                    "stn " + str(counter),
+                    _attributes={"style": "dashed"},
+                )
+            if node.p:
+                dot.edge(
+                    str(node.key), str(node.p.key), _attributes={"style": "dashed"}
+                )
 
         add_nodes_edges(self.root_node)
-        dot.render("binary_tree", view=False, format="png")
+        dot.render(file_name, view=False, format="png")
 
 
 tree = Tree()
 tree.insert(1, None)
+node = tree.insert(3, None)
+tree.insert(4, None)
 tree.insert(2, None)
-tree.insert(3, None)
 tree.insert(0, None)
+tree.visualize_binary_tree("before")
+tree.left_rotate(node)
 
-tree.visualize_binary_tree()
+tree.visualize_binary_tree("after")
