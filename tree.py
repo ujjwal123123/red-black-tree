@@ -37,7 +37,7 @@ class Tree:
         self.root_node: TreeNode | None = None
         self.sentinel = TreeNode(-1, None, Color.BLACK)
 
-    def left_rotate(self, x: TreeNode) -> TreeNode:
+    def left_rotate(self, x: TreeNode):
         y = x.right
         if y is self.sentinel:
             return x
@@ -45,26 +45,24 @@ class Tree:
 
         beta = y.left
         if beta is not self.sentinel:
+            assert beta is not None
             beta.p = x
             x.right = beta
         else:
             x.right = self.sentinel
 
-            # x is left child
-            if x.p.left == x:
-                x.p.left = y
-            # x is right child
-            if x.p.right == x:
-                x.p.right = y
+        if x.p is None:  # x is the root node
+            self.root_node = y
+        elif x.p.left == x:  # x is left child
+            x.p.left = y
+        elif x.p.right == x:  # x is right child
+            x.p.right = y
+        else:
+            raise Exception("Something went wrong")
 
         y.p = x.p
         x.p = y
         y.left = x
-
-        if self.root_node is x:
-            self.root_node = y
-
-        return y
 
     def insert(self, key: int, value: None | NodeData) -> TreeNode:
         # binary search
@@ -134,8 +132,8 @@ class Tree:
 
 
 tree = Tree()
-tree.insert(1, None)
-node = tree.insert(3, None)
+node = tree.insert(1, None)
+tree.insert(3, None)
 tree.insert(4, None)
 tree.insert(2, None)
 tree.insert(0, None)
