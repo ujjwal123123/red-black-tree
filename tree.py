@@ -64,6 +64,33 @@ class Tree:
         x.p = y
         y.left = x
 
+    def right_rotate(self, y: TreeNode):
+        x = y.left
+        if x is self.sentinel:
+            return y
+        assert x is not None
+
+        beta = x.right
+        if beta is not self.sentinel:
+            assert beta is not None
+            beta.p = y
+            y.left = beta
+        else:
+            y.left = self.sentinel
+
+        if y.p is None:  # y is the root node
+            self.root_node = x
+        elif y.p.left == y:  # y is left child
+            y.p.left = x
+        elif y.p.right == y:  # y is right child
+            y.p.right = x
+        else:
+            raise Exception("Something went wrong")
+
+        x.p = y.p
+        y.p = x
+        x.right = y
+
     def insert(self, key: int, value: None | NodeData) -> TreeNode:
         # binary search
         parent: None | TreeNode = None
@@ -132,12 +159,13 @@ class Tree:
 
 
 tree = Tree()
-node = tree.insert(1, None)
-tree.insert(3, None)
-tree.insert(4, None)
-tree.insert(2, None)
-tree.insert(0, None)
+node1 = tree.insert(1, None)
+node3 = tree.insert(3, None)
+node4 = tree.insert(4, None)
+node2 = tree.insert(2, None)
+node0 = tree.insert(0, None)
 tree.visualize_binary_tree("before")
-tree.left_rotate(node)
-
+tree.left_rotate(node3)
 tree.visualize_binary_tree("after")
+tree.right_rotate(node4)
+tree.visualize_binary_tree("after_right")
