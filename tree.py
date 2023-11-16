@@ -105,7 +105,7 @@ class Tree:
             else:
                 return current
 
-        new_node = TreeNode(key, value)
+        new_node = TreeNode(key, value, Color.RED)
         new_node.left = self.sentinel
         new_node.right = self.sentinel
         if parent:
@@ -116,7 +116,44 @@ class Tree:
             parent.right = new_node
         elif parent.key > key:
             parent.left = new_node
+
+        # fix the tree to satisfy red-black tree properties
+        self._insert_fixup(new_node)
+
         return new_node
+
+    def _insert_fixup(self, node: TreeNode) -> None:
+        while node.p and node.p.color == Color.RED:
+            if node.p == node.p.p.left:
+                y = node.p.p.right  # uncle
+                if y.color == Color.RED:
+                    node.p.color = Color.BLACK
+                    y.color = Color.BLACK
+                    node.p.p.color = Color.RED
+                    node = node.p.p
+                else:
+                    if node == node.p.right:
+                        node = node.p
+                        self.left_rotate(node)
+                    node.p.color = Color.BLACK
+                    node.p.p.color = Color.RED
+                    self.right_rotate(node.p.p)
+            else:
+                y = node.p.p.left
+                if y.color == Color.RED:
+                    node.p.color = Color.BLACK
+                    y.color = Color.BLACK
+                    node.p.p.color = Color.RED
+                    node = node.p.p
+                else:
+                    if node == node.p.left:
+                        node = node.p
+                        self.right_rotate(node)
+                    node.p.color = Color.BLACK
+                    node.p.p.color = Color.RED
+                    self.left_rotate(node.p.p)
+
+        self.root_node.color = Color.BLACK
 
     def visualize_binary_tree(self, file_name):
         counter = 0
@@ -124,9 +161,19 @@ class Tree:
         dot.node(str(self.root_node.key))
 
         def add_nodes_edges(node):
+            if node is not self.sentinel:
+                color = "red" if node.color == Color.RED else "black"
+                dot.node(
+                    str(node.key),
+                    _attributes={
+                        "shape": "circle",
+                        "color": color,
+                        "penwidth": "3",
+                    },
+                )
+
             nonlocal counter
             if node.left is not self.sentinel:
-                dot.node(str(node.left.key))
                 dot.edge(str(node.key), str(node.left.key))
                 add_nodes_edges(node.left)
             elif node.left is self.sentinel:
@@ -138,7 +185,6 @@ class Tree:
                     _attributes={"style": "dashed"},
                 )
             if node.right is not self.sentinel:
-                dot.node(str(node.right.key))
                 dot.edge(str(node.key), str(node.right.key))
                 add_nodes_edges(node.right)
             elif node.right is self.sentinel:
@@ -160,12 +206,30 @@ class Tree:
 
 tree = Tree()
 node1 = tree.insert(1, None)
+tree.visualize_binary_tree("before")
+input()
 node3 = tree.insert(3, None)
+tree.visualize_binary_tree("before")
+input()
 node4 = tree.insert(4, None)
+tree.visualize_binary_tree("before")
+input()
 node2 = tree.insert(2, None)
+tree.visualize_binary_tree("before")
+input()
 node0 = tree.insert(0, None)
 tree.visualize_binary_tree("before")
-tree.left_rotate(node3)
-tree.visualize_binary_tree("after")
-tree.right_rotate(node4)
-tree.visualize_binary_tree("after_right")
+input()
+node0 = tree.insert(5, None)
+tree.visualize_binary_tree("before")
+input()
+node0 = tree.insert(6, None)
+tree.visualize_binary_tree("before")
+input()
+node0 = tree.insert(7, None)
+tree.visualize_binary_tree("before")
+input()
+# # tree.left_rotate(node3)
+# tree.visualize_binary_tree("after")
+# # tree.right_rotate(node4)
+# tree.visualize_binary_tree("after_right")
