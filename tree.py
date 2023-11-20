@@ -52,15 +52,15 @@ class SentinelNode(TreeNode):
 
 class Tree:
     def __init__(self) -> None:
-        self.root_node: TreeNode = SentinelNode()
         self.sentinel = SentinelNode()
+        self.root_node: TreeNode = self.sentinel
         self.flip_count = 0
 
     def get_colors(self) -> dict[int, Color]:
         ret = {}
 
         def helper(node: TreeNode):
-            if node is None or type(node) == SentinelNode:
+            if node is None or node is self.sentinel:
                 return
             ret[node.key] = node.color
             helper(node.left)
@@ -140,7 +140,7 @@ class Tree:
         parent: None | TreeNode = None
         current: None | TreeNode = self.root_node
 
-        while current and type(current) != SentinelNode:
+        while current and current is not self.sentinel:
             parent = current
             if current.key > key:
                 current = current.left
@@ -219,42 +219,38 @@ class Tree:
     def _flip_color(self, node: TreeNode, color: Color) -> None:
         if not node or node is self.sentinel or node.color == color:
             return
-        assert type(node) == TreeNode
         node.color = color
-        # self.flip_count += 1
 
     def delete(self, key):
         colors_before = self.get_colors()
-        node: TreeNode | None = self.search(key)
-        assert node is not None
-        assert node.left is not None
-        assert node.right is not None
+        z: TreeNode | None = self.search(key)
+        assert z and z is not self.sentinel
 
-        y = node
+        y = z
         y_original_color = y.color
 
-        if node.left == self.sentinel:
-            x = node.right
-            self.transplant(node, node.right)
-        elif node.right == self.sentinel:
-            x = node.left
-            self.transplant(node, node.left)
+        if z.left is self.sentinel:
+            x = z.right
+            self.transplant(z, z.right)
+        elif z.right is self.sentinel:
+            x = z.left
+            self.transplant(z, z.left)
         else:
-            y = self._minimum(node.right)
+            y = self._minimum(z.right)
             y_original_color = y.color
             x = y.right
 
-            if y.p != node:
+            if y != z.right:
                 self.transplant(y, y.right)
-                y.right = node.right
+                y.right = z.right
                 y.right.p = y
             else:
                 x.p = y
 
-            self.transplant(node, y)
-            y.left = node.left
+            self.transplant(z, y)
+            y.left = z.left
             y.left.p = y
-            self._flip_color(y, node.color)
+            self._flip_color(y, z.color)
 
         if y_original_color == Color.BLACK:
             self._delete_fixup(x)
@@ -317,10 +313,9 @@ class Tree:
 
         self._flip_color(node, Color.BLACK)
 
-    def search(self, key: int) -> TreeNode | None:
+    def search(self, key: int) -> TreeNode:
         node = self.root_node
         while node is not self.sentinel:
-            assert node is not None
             if node.key == key:
                 return node
             elif node.key < key:
@@ -328,17 +323,15 @@ class Tree:
             else:
                 node = node.left
 
-        return None
+        return node
 
     def _minimum(self, node: TreeNode) -> TreeNode:
         while node.left is not self.sentinel:
-            assert node.left is not None
             node = node.left
-
         return node
 
     def find_closest(self, key: int) -> list[TreeNode]:
-        def find_lesser(node: TreeNode) -> TreeNode | None:
+        def find_lesser(node: TreeNode) -> TreeNode:
             ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
@@ -351,7 +344,7 @@ class Tree:
 
             return ans
 
-        def find_greater(node: TreeNode) -> TreeNode | None:
+        def find_greater(node: TreeNode) -> TreeNode:
             ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
@@ -367,14 +360,11 @@ class Tree:
         lesser = find_lesser(self.root_node)
         greater = find_greater(self.root_node)
 
-        assert lesser is not self.sentinel
-        assert greater is not self.sentinel
-
-        if lesser is None and greater is None:
+        if lesser is self.sentinel and greater is self.sentinel:
             return []
-        elif lesser is None:
+        elif lesser is self.sentinel:
             return [greater]
-        elif greater is None:
+        elif greater is self.sentinel:
             return [lesser]
         elif key - lesser.key < greater.key - key:
             return [lesser]
@@ -422,7 +412,7 @@ class Tree:
                     },
                 )
 
-            if type(node) == SentinelNode or (not node.left and not node.right):
+            if node is self.sentinel or (not node.left and not node.right):
                 return
 
             nonlocal counter

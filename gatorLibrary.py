@@ -4,6 +4,7 @@ from tree import Tree, NodeData
 import time
 import sys
 
+
 tree = Tree()
 
 
