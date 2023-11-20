@@ -2,9 +2,6 @@ from typing import Optional
 from heap import Heap
 import graphviz
 from enum import Enum
-import os
-
-# class syntax
 
 
 class Color(Enum):
@@ -40,19 +37,48 @@ class NodeData:
 
 class TreeNode:
     def __init__(self, key: int, data, color: Color) -> None:
-        self.left: "TreeNode" | None = None
-        self.right: "TreeNode" | None = None
+        self.left: "TreeNode"
+        self.right: "TreeNode"
         self.key: int = key
         self.data: NodeData = data
         self.color: Color = color
         self.p: "TreeNode" | None = None
 
 
+class SentinelNode(TreeNode):
+    def __init__(self) -> None:
+        super().__init__(-1, None, Color.BLACK)
+
+
 class Tree:
     def __init__(self) -> None:
-        self.root_node: TreeNode | None = None
-        self.sentinel = TreeNode(-1, None, Color.BLACK)
+        self.root_node: TreeNode = SentinelNode()
+        self.sentinel = SentinelNode()
         self.flip_count = 0
+
+    def get_colors(self) -> dict[int, Color]:
+        ret = {}
+
+        def helper(node: TreeNode):
+            if node is None or type(node) == SentinelNode:
+                return
+            ret[node.key] = node.color
+            helper(node.left)
+            helper(node.right)
+
+        helper(self.root_node)
+
+        return ret
+
+    def update_color_flips(
+        self, before: dict[int, Color], after: dict[int, Color]
+    ) -> int:
+        ans = 0
+        for key in before.keys():
+            if key in after.keys() and before[key] != after[key]:
+                ans += 1
+        self.flip_count += ans
+        return ans
 
     def left_rotate(self, x: TreeNode):
         y = x.right
@@ -109,11 +135,12 @@ class Tree:
         x.right = y
 
     def insert(self, key: int, value: None | NodeData) -> TreeNode:
+        colors_before = self.get_colors()
         # binary search
         parent: None | TreeNode = None
         current: None | TreeNode = self.root_node
 
-        while current and current is not self.sentinel:
+        while current and type(current) != SentinelNode:
             parent = current
             if current.key > key:
                 current = current.left
@@ -136,6 +163,9 @@ class Tree:
 
         # fix the tree to satisfy red-black tree properties
         self._insert_fixup(new_node)
+
+        colors_after = self.get_colors()
+        self.update_color_flips(colors_before, colors_after)
 
         return new_node
 
@@ -177,8 +207,6 @@ class Tree:
 
     def transplant(self, u: TreeNode, v: TreeNode) -> None:
         """Replaces subtree rooted at u with subtree rooted at v"""
-        # assert u.p is not None
-        # assert v.p is not None
         if u.p is None or u.p is self.sentinel:
             self.root_node = v
         elif u == u.p.left:
@@ -189,13 +217,14 @@ class Tree:
         v.p = u.p
 
     def _flip_color(self, node: TreeNode, color: Color) -> None:
-        assert type(node) == TreeNode
         if not node or node is self.sentinel or node.color == color:
             return
+        assert type(node) == TreeNode
         node.color = color
-        self.flip_count += 1
+        # self.flip_count += 1
 
     def delete(self, key):
+        colors_before = self.get_colors()
         node: TreeNode | None = self.search(key)
         assert node is not None
         assert node.left is not None
@@ -230,11 +259,12 @@ class Tree:
         if y_original_color == Color.BLACK:
             self._delete_fixup(x)
 
+        colors_after = self.get_colors()
+        self.update_color_flips(colors_before, colors_after)
+
     def _delete_fixup(self, node: TreeNode):
         while node != self.root_node and node.color == Color.BLACK:
             assert node.p
-            assert node.p.left
-            assert node.p.right
 
             if node == node.p.left:
                 w: TreeNode = node.p.right  # sibling
@@ -308,8 +338,8 @@ class Tree:
         return node
 
     def find_closest(self, key: int) -> list[TreeNode]:
-        def find_lesser(node) -> TreeNode | None:
-            ans = None
+        def find_lesser(node: TreeNode) -> TreeNode | None:
+            ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
                     return node
@@ -321,8 +351,8 @@ class Tree:
 
             return ans
 
-        def find_greater(node) -> TreeNode | None:
-            ans = None
+        def find_greater(node: TreeNode) -> TreeNode | None:
+            ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
                     return node
@@ -392,7 +422,7 @@ class Tree:
                     },
                 )
 
-            if not node.left and not node.right:
+            if type(node) == SentinelNode or (not node.left and not node.right):
                 return
 
             nonlocal counter
