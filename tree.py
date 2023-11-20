@@ -51,6 +51,7 @@ class Tree:
     def __init__(self) -> None:
         self.root_node: TreeNode | None = None
         self.sentinel = TreeNode(-1, None, Color.BLACK)
+        self.flip_count = 0
 
     def left_rotate(self, x: TreeNode):
         y = x.right
@@ -174,119 +175,106 @@ class Tree:
         self.root_node.color = Color.BLACK
 
     def transplant(self, u: TreeNode, v: TreeNode) -> None:
-        assert u is not None
-        assert v is not None
-        assert u.p is not None
+        """Replaces subtree rooted at u with subtree rooted at v"""
+        # assert u.p is not None
         # assert v.p is not None
-        if u.p is self.sentinel:
+        if u.p is None or u.p is self.sentinel:
             self.root_node = v
         elif u == u.p.left:
             u.p.left = v
         elif u == u.p.right:
             u.p.right = v
-        else:
-            raise Exception("Something went wrong")
 
         v.p = u.p
 
-    def delete(self, key: int) -> None:
-        node = self.search(key)
-        if node is None:
-            raise Exception("Node not found")
+    def _flip_color(self, node: TreeNode, color: Color) -> None:
+        node.color = color
+        self.flip_count += 1
 
-        assert node.right is not None
-        assert node.left is not None
+    def delete(self, key):
+        node: TreeNode | None = self.search(key)
+        assert node is not None
+        y = node
+        y_original_color = y.color
 
-        if node.left is self.sentinel:
+        if node.left == self.sentinel:
+            x = node.right
             self.transplant(node, node.right)
-        elif node.right is self.sentinel:
+        elif node.right == self.sentinel:
+            x = node.left
             self.transplant(node, node.left)
         else:
             y = self._minimum(node.right)
+            y_original_color = y.color
+            x = y.right
+
             if y.p != node:
-                assert y.right is not None
                 self.transplant(y, y.right)
                 y.right = node.right
                 y.right.p = y
+            else:
+                x.p = y
 
             self.transplant(node, y)
             y.left = node.left
             y.left.p = y
+            self._flip_color(y, node.color)
 
-        # if node.color == Color.BLACK:
-        #     self._delete_fixup(node)
+        if y_original_color == Color.BLACK:
+            self._delete_fixup(x)
 
-    def _delete_fixup(self, node: TreeNode) -> None:
+    def _delete_fixup(self, node: TreeNode):
         while node != self.root_node and node.color == Color.BLACK:
-            assert node.p is not None
             if node == node.p.left:
                 w = node.p.right
-                assert w is not None
+
                 if w.color == Color.RED:
-                    w.color = Color.BLACK
-                    node.p.color = Color.RED
+                    self._flip_color(w, Color.BLACK)
+                    self._flip_color(node.p, Color.RED)
                     self.left_rotate(node.p)
                     w = node.p.right
 
-                assert w is not None
-                assert w.left is not None
-                assert w.right is not None
                 if w.left.color == Color.BLACK and w.right.color == Color.BLACK:
-                    w.color = Color.RED
+                    self._flip_color(w, Color.RED)
                     node = node.p
                 else:
                     if w.right.color == Color.BLACK:
-                        w.left.color = Color.BLACK
-                        w.color = Color.RED
+                        self._flip_color(w.left, Color.BLACK)
+                        self._flip_color(w, Color.RED)
                         self.right_rotate(w)
                         w = node.p.right
-                        assert w is not None
-                        assert w.right is not None
 
-                    w.color = node.p.color
-                    node.p.color = Color.BLACK
-                    w.right.color = Color.BLACK
+                    self._flip_color(w, node.p.color)
+                    self._flip_color(node.p, Color.BLACK)
+                    self._flip_color(w.right, Color.BLACK)
                     self.left_rotate(node.p)
-                    assert self.root_node is not None
                     node = self.root_node
             else:
                 w = node.p.left
-                assert w is not None
+
                 if w.color == Color.RED:
-                    w.color = Color.BLACK
-                    node.p.color = Color.RED
+                    self._flip_color(w, Color.BLACK)
+                    self._flip_color(node.p, Color.RED)
                     self.right_rotate(node.p)
                     w = node.p.left
 
-                # assert w and w.right and w.left
-                if (
-                    w
-                    and w.right
-                    and w.left
-                    and w.right.color == Color.BLACK
-                    and w.left.color == Color.BLACK
-                ):
-                    w.color = Color.RED
+                if w.right.color == Color.BLACK and w.left.color == Color.BLACK:
+                    self._flip_color(w, Color.RED)
                     node = node.p
                 else:
-                    if w and w.left and w.left.color == Color.BLACK:
-                        if w.right:
-                            w.right.color = Color.BLACK
-                        w.color = Color.RED
+                    if w.left.color == Color.BLACK:
+                        self._flip_color(w.right, Color.BLACK)
+                        self._flip_color(w, Color.RED)
                         self.left_rotate(w)
                         w = node.p.left
 
-                    # assert w and w.left
-                    if w:
-                        w.color = node.p.color
-                    node.p.color = Color.BLACK
-                    if w and w.left:
-                        w.left.color = Color.BLACK
+                    self._flip_color(w, node.p.color)
+                    self._flip_color(node.p, Color.BLACK)
+                    self._flip_color(w.left, Color.BLACK)
                     self.right_rotate(node.p)
-                    assert self.root_node
                     node = self.root_node
 
-        node.color = Color.BLACK
+        self._flip_color(node, Color.BLACK)
 
     def search(self, key: int) -> TreeNode | None:
         node = self.root_node
@@ -391,6 +379,9 @@ class Tree:
                     },
                 )
 
+            if not node.left and not node.right:
+                return
+
             nonlocal counter
             if node.left is not self.sentinel:
                 dot.edge(str(node.key), str(node.left.key))
@@ -425,40 +416,13 @@ class Tree:
 
 if __name__ == "__main__":
     tree = Tree()
-    node1 = tree.insert(1, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node3 = tree.insert(3, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node4 = tree.insert(4, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node2 = tree.insert(2, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.insert(0, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.insert(5, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.insert(6, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.insert(7, None)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.delete(7)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.delete(6)
-    tree.visualize_binary_tree("before")
-    input()
-    node0 = tree.delete(5)
-    tree.visualize_binary_tree("before")
-    input()
-    # # tree.left_rotate(node3)
-    # tree.visualize_binary_tree("after")
-    # # tree.right_rotate(node4)
-    # tree.visualize_binary_tree("after_right")
+
+    while True:
+        tree.visualize_binary_tree("before")
+        command = input("Enter command: ")
+        if command.startswith("insert"):
+            value = int(command.split(" ")[-1])
+            tree.insert(value, None)
+        elif command.startswith("delete"):
+            value = int(command.split(" ")[-1])
+            tree.delete(value)

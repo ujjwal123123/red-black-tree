@@ -15,7 +15,6 @@ def my_print(*args, end="\n"):
 
 def PrintBook(bookId: int):
     book = tree.search(bookId)
-    assert book is not None
     if book is None:
         my_print(f"Book {bookId} not found in the Library")
     else:
@@ -100,11 +99,12 @@ def DeleteBook(bookID: int):
 
 def Quit():
     my_print("Program Terminated!!")
+    tree.visualize_binary_tree("tree")
     exit()
 
 
 def ColorFlipCount():
-    print("Color Flip Count: not implemented yet\n")
+    print(f"Color Flip Count: {tree.flip_count}\n")
 
 
 def PrintBooks(bookID1: int, bookID2: int):
