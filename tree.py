@@ -2,6 +2,7 @@ from typing import Optional
 from heap import Heap
 import graphviz
 from enum import Enum
+import os
 
 # class syntax
 
@@ -38,12 +39,12 @@ class NodeData:
 
 
 class TreeNode:
-    def __init__(self, key: int, data, color: Color | None = None) -> None:
+    def __init__(self, key: int, data, color: Color) -> None:
         self.left: "TreeNode" | None = None
         self.right: "TreeNode" | None = None
         self.key: int = key
         self.data: NodeData = data
-        self.color: Color | None = color
+        self.color: Color = color
         self.p: "TreeNode" | None = None
 
 
@@ -197,6 +198,9 @@ class Tree:
     def delete(self, key):
         node: TreeNode | None = self.search(key)
         assert node is not None
+        assert node.left is not None
+        assert node.right is not None
+
         y = node
         y_original_color = y.color
 
@@ -228,8 +232,12 @@ class Tree:
 
     def _delete_fixup(self, node: TreeNode):
         while node != self.root_node and node.color == Color.BLACK:
+            assert node.p
+            assert node.p.left
+            assert node.p.right
+
             if node == node.p.left:
-                w = node.p.right
+                w: TreeNode = node.p.right  # sibling
 
                 if w.color == Color.RED:
                     self._flip_color(w, Color.BLACK)
@@ -365,7 +373,9 @@ class Tree:
 
     def visualize_binary_tree(self, file_name):
         counter = 0
-        dot = graphviz.Digraph()
+        dot = graphviz.Digraph(
+            graph_attr={"label": f"Color flip count: {self.flip_count}"}
+        )
         if not self.root_node:
             return
         dot.node(str(self.root_node.key))
@@ -421,11 +431,14 @@ if __name__ == "__main__":
     tree = Tree()
 
     while True:
-        tree.visualize_binary_tree("before")
+        print(f"Color flip count:", tree.flip_count)
         command = input("Enter command: ")
+        tree.visualize_binary_tree("before")
         if command.startswith("insert"):
             value = int(command.split(" ")[-1])
             tree.insert(value, None)
         elif command.startswith("delete"):
             value = int(command.split(" ")[-1])
             tree.delete(value)
+
+        tree.visualize_binary_tree("after")
