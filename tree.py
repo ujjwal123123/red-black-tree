@@ -143,32 +143,32 @@ class Tree:
             if node.p == node.p.p.left:
                 y = node.p.p.right  # uncle
                 if y.color == Color.RED:
-                    node.p.color = Color.BLACK
-                    y.color = Color.BLACK
-                    node.p.p.color = Color.RED
+                    self._flip_color(node.p, Color.BLACK)
+                    self._flip_color(y, Color.BLACK)
+                    self._flip_color(node.p.p, Color.RED)
                     assert node.p.p
                     node = node.p.p
                 else:
                     if node == node.p.right:
                         node = node.p
                         self.left_rotate(node)
-                    node.p.color = Color.BLACK
-                    node.p.p.color = Color.RED
+                    self._flip_color(node.p, Color.BLACK)
+                    self._flip_color(node.p.p, Color.RED)
                     self.right_rotate(node.p.p)
             else:
                 y = node.p.p.left
                 if y.color == Color.RED:
-                    node.p.color = Color.BLACK
-                    y.color = Color.BLACK
-                    node.p.p.color = Color.RED
+                    self._flip_color(node.p, Color.BLACK)
+                    self._flip_color(y, Color.BLACK)
+                    self._flip_color(node.p.p, Color.RED)
                     assert node.p.p
                     node = node.p.p
                 else:
                     if node == node.p.left:
                         node = node.p
                         self.right_rotate(node)
-                    node.p.color = Color.BLACK
-                    node.p.p.color = Color.RED
+                    self._flip_color(node.p, Color.BLACK)
+                    self._flip_color(node.p.p, Color.RED)
                     self.left_rotate(node.p.p)
 
         assert self.root_node is not None
@@ -188,6 +188,9 @@ class Tree:
         v.p = u.p
 
     def _flip_color(self, node: TreeNode, color: Color) -> None:
+        assert type(node) == TreeNode
+        if not node or node is self.sentinel or node.color == color:
+            return
         node.color = color
         self.flip_count += 1
 
