@@ -1,46 +1,35 @@
 from typing import Optional
-from heap import Heap
 import graphviz
 from enum import Enum
 
 
 class Color(Enum):
+    """
+    Enum representing the color of a node in a tree.
+    """
+
     RED = 1
     BLACK = 2
 
 
-class NodeData:
-    def __init__(
-        self, book_id: int, book_name: str, author_name: str, is_available: bool
-    ) -> None:
-        self.book_id: int = book_id
-        self.book_name: str = book_name
-        self.author_name: str = author_name
-        self.is_available: bool = is_available
-        self.borrowed_by: int | None = None
-        self.reservation_heap: Heap = Heap()
-
-    def __str__(self) -> str:
-        ret = []
-        ret.append(f"BookID = {self.book_id}")
-        ret.append(f'Title = "{self.book_name}"')
-        ret.append(f'Author = "{self.author_name}"')
-        if self.is_available:
-            ret.append('Availability = "Yes"')
-        else:
-            ret.append('Availability = "No"')
-        ret.append(f"BorrowedBy = {self.borrowed_by}")
-        ret.append(f"Reservations = {self.reservation_heap.__str__()}")
-
-        return "\n".join(ret)
-
-
 class TreeNode:
+    """
+    Represents a node in a binary tree.
+
+    Attributes:
+        key (int): The key value of the node.
+        data: The data stored in the node.
+        color (Color): The color of the node.
+        left (TreeNode): The left child of the node.
+        right (TreeNode): The right child of the node.
+        p (TreeNode | None): The parent of the node.
+    """
+
     def __init__(self, key: int, data, color: Color) -> None:
         self.left: "TreeNode"
         self.right: "TreeNode"
         self.key: int = key
-        self.data: NodeData = data
+        self.data = data
         self.color: Color = color
         self.p: "TreeNode" | None = None
 
@@ -57,6 +46,12 @@ class Tree:
         self.flip_count = 0
 
     def get_colors(self) -> dict[int, Color]:
+        """
+        Returns a dictionary mapping each node's key to its color.
+
+        Returns:
+            dict[int, Color]: A dictionary where the keys are node keys and the values are node colors.
+        """
         ret = {}
 
         def helper(node: TreeNode):
@@ -81,6 +76,13 @@ class Tree:
         return ans
 
     def left_rotate(self, x: TreeNode):
+        """
+        Left rotates the given node in the binary tree.
+
+        Args:
+            x (TreeNode): The node to be left rotated.
+
+        """
         y = x.right
         if y is self.sentinel:
             return x
@@ -134,7 +136,7 @@ class Tree:
         y.p = x
         x.right = y
 
-    def insert(self, key: int, value: None | NodeData) -> TreeNode:
+    def insert(self, key: int, value) -> TreeNode:
         colors_before = self.get_colors()
         # binary search
         parent: None | TreeNode = None

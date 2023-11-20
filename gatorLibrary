@@ -1,8 +1,35 @@
 #!/usr/bin/env python3
 
-from tree import Tree, NodeData
+from tree import Tree
+from heap import Heap
 import time
 import sys
+
+
+class NodeData:
+    def __init__(
+        self, book_id: int, book_name: str, author_name: str, is_available: bool
+    ) -> None:
+        self.book_id: int = book_id
+        self.book_name: str = book_name
+        self.author_name: str = author_name
+        self.is_available: bool = is_available
+        self.borrowed_by: int | None = None
+        self.reservation_heap: Heap = Heap()
+
+    def __str__(self) -> str:
+        ret = []
+        ret.append(f"BookID = {self.book_id}")
+        ret.append(f'Title = "{self.book_name}"')
+        ret.append(f'Author = "{self.author_name}"')
+        if self.is_available:
+            ret.append('Availability = "Yes"')
+        else:
+            ret.append('Availability = "No"')
+        ret.append(f"BorrowedBy = {self.borrowed_by}")
+        ret.append(f"Reservations = {self.reservation_heap.__str__()}")
+
+        return "\n".join(ret)
 
 
 tree = Tree()

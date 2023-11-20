@@ -1,5 +1,6 @@
 default:
-	chmod +x gatorLibrary.py
+	chmod +x gatorLibrary
+	pip install graphviz
 
 test1e:
 	./gatorLibrary < testcases/example1 | sdiff -WZi testcases/example1.output -
