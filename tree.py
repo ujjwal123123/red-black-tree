@@ -1,6 +1,6 @@
 from typing import Optional
-import graphviz
 from enum import Enum
+import importlib.util
 
 
 class Color(Enum):
@@ -394,6 +394,12 @@ class Tree:
         return helper(self.root_node)
 
     def visualize_binary_tree(self, file_name):
+        spec = importlib.util.find_spec("graphviz")
+        if spec is None:
+            return
+
+        import graphviz
+
         counter = 0
         dot = graphviz.Digraph(
             graph_attr={"label": f"Color flip count: {self.flip_count}"}

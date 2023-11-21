@@ -99,8 +99,6 @@ def FindClosestBook(bookID: int):
         my_print(book.data)
         print()
 
-    tree.visualize_binary_tree("before")
-
 
 def DeleteBook(bookID: int):
     book = tree.search(bookID)
@@ -127,6 +125,7 @@ def DeleteBook(bookID: int):
 
 def Quit():
     my_print("Program Terminated!!")
+    
     tree.visualize_binary_tree("tree")
     exit()
 
