@@ -30,3 +30,6 @@ diagrams:
 
 pdf:
 	pandoc -o README.pdf README.md --pdf-engine=tectonic
+
+zip:
+	zip -r Ujjwal_Goel.zip gatorLibrary.py heap.py tree.py Makefile README.pdf requirements.txt
