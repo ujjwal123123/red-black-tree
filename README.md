@@ -7,7 +7,7 @@ author: |
   | UFID: 8247-9467
 title: Red-Black Tree and Binary Min-Heap
 subtitle: Project for Advanced Data Structures (COP5536)
-...
+---
 
 # Red-Black Tree and Binary Min-Heap
 
