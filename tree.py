@@ -4,17 +4,14 @@ import importlib.util
 
 
 class Color(Enum):
-    """
-    Enum representing the color of a node in a tree.
-    """
+    """Enum representing the color of a node in a tree."""
 
     RED = 1
     BLACK = 2
 
 
 class TreeNode:
-    """
-    Represents a node in a binary tree.
+    """Represents a node in a binary tree.
 
     Attributes:
         key (int): The key value of the node.
@@ -35,8 +32,7 @@ class TreeNode:
 
 
 class SentinelNode(TreeNode):
-    """
-    Represents a sentinel node in a tree.
+    """Represents a sentinel node in a tree.
 
     A sentinel node is a special node used in tree data structures to represent
     the absence of a real node. It is typically used to simplify the implementation
@@ -54,8 +50,7 @@ class Tree:
         self.flip_count = 0
 
     def get_colors(self) -> dict[int, Color]:
-        """
-        Returns a dictionary mapping each node's key to its color.
+        """Returns a dictionary mapping each node's key to its color.
 
         Returns:
             dict[int, Color]: A dictionary where the keys are node keys and the values are node colors.
@@ -76,8 +71,7 @@ class Tree:
     def update_color_flips(
         self, before: dict[int, Color], after: dict[int, Color]
     ) -> int:
-        """
-        Updates the color flips count based on the changes between the 'before' and 'after' dictionaries.
+        """Updates the color flips count based on the changes between the 'before' and 'after' dictionaries.
 
         Args:
             before (dict[int, Color]): The dictionary representing the colors before the update.
@@ -95,8 +89,7 @@ class Tree:
         return ans
 
     def left_rotate(self, x: TreeNode):
-        """
-        Left rotates the given node in the binary tree.
+        """Left rotates the given node in the binary tree.
 
         Args:
             x (TreeNode): The node to be left rotated.
@@ -129,8 +122,7 @@ class Tree:
         y.left = x
 
     def right_rotate(self, y: TreeNode):
-        """
-        Performs a right rotation on the given node 'y' in the tree.
+        """Performs a right rotation on the given node 'y' in the tree.
 
         Args:
             y (TreeNode): The node to be rotated.
@@ -162,8 +154,7 @@ class Tree:
         x.right = y
 
     def insert(self, key: int, value) -> TreeNode:
-        """
-        Inserts a new node with the given key and value into the tree.
+        """Inserts a new node with the given key and value into the tree.
 
         Args:
             key (int): The key of the new node.
@@ -207,8 +198,7 @@ class Tree:
         return new_node
 
     def _insert_fixup(self, node: TreeNode) -> None:
-        """
-        Performs the fixup process after inserting a node into the red-black tree.
+        """Performs the fixup process after inserting a node into the red-black tree.
 
         Args:
             node (TreeNode): The newly inserted node.
@@ -252,8 +242,7 @@ class Tree:
         self.root_node.color = Color.BLACK
 
     def transplant(self, u: TreeNode, v: TreeNode) -> None:
-        """
-        Replaces the subtree rooted at node u with the subtree rooted at node v.
+        """Replaces the subtree rooted at node u with the subtree rooted at node v.
 
         Args:
             u (TreeNode): The node whose subtree is to be replaced.
@@ -272,8 +261,7 @@ class Tree:
         v.p = u.p
 
     def _flip_color(self, node: TreeNode, color: Color) -> None:
-        """
-        Flips the color of the given node to the specified color.
+        """Flips the color of the given node to the specified color.
 
         Args:
             node (TreeNode): The node whose color needs to be flipped.
@@ -287,8 +275,7 @@ class Tree:
         node.color = color
 
     def delete(self, key):
-        """
-        Deletes a node with the given key from the tree.
+        """Deletes a node with the given key from the tree.
 
         Args:
             key: The key of the node to be deleted.
@@ -333,8 +320,7 @@ class Tree:
         self.update_color_flips(colors_before, colors_after)
 
     def _delete_fixup(self, node: TreeNode):
-        """
-        Performs the fixup process after deleting a node in the red-black tree.
+        """Performs the fixup process after deleting a node in the red-black tree.
 
         Args:
             node (TreeNode): The node to start the fixup process from.
@@ -397,8 +383,7 @@ class Tree:
         self._flip_color(node, Color.BLACK)
 
     def search(self, key: int) -> TreeNode:
-        """
-        Search for a node with the given key in the tree.
+        """Search for a node with the given key in the tree.
 
         Args:
             key (int): The key to search for.
@@ -423,8 +408,7 @@ class Tree:
         return node
 
     def find_closest(self, key: int) -> list[TreeNode]:
-        """
-        Finds the closest nodes to the given key in the tree.
+        """Finds the closest nodes to the given key in the tree.
 
         Args:
             key (int): The key to find the closest nodes for.
@@ -434,9 +418,7 @@ class Tree:
         """
 
         def find_lesser(node: TreeNode) -> TreeNode:
-            """
-            Finds the node with the greatest key that is less than the given node's key.
-            """
+            """Finds the node with the greatest key that is less than the given node's key."""
             ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
@@ -450,9 +432,7 @@ class Tree:
             return ans
 
         def find_greater(node: TreeNode) -> TreeNode:
-            """
-            Finds the first node in the tree that has a key greater than the given node's key.
-            """
+            """Finds the first node in the tree that has a key greater than the given node's key."""
             ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
@@ -508,8 +488,7 @@ class Tree:
         return helper(self.root_node)
 
     def visualize_binary_tree(self, file_name):
-        """
-        Visualizes the binary tree and saves the visualization as an image file
+        """Visualizes the binary tree and saves the visualization as an image file
         using graphviz.
 
         Args:

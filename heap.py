@@ -11,8 +11,7 @@ class Heap:
         return str([c for a, b, c in self.heap])
 
     def left(self, i: int) -> int:
-        """
-        Returns the index of the left child of the node at index i.
+        """Returns the index of the left child of the node at index i.
 
         Parameters:
         - i (int): The index of the node.
@@ -23,8 +22,7 @@ class Heap:
         return 2 * i + 1
 
     def right(self, i: int) -> int:
-        """
-        Returns the index of the right child of the node at index i.
+        """Returns the index of the right child of the node at index i.
 
         Parameters:
         - i (int): The index of the node.
@@ -35,8 +33,7 @@ class Heap:
         return 2 * i + 2
 
     def parent(self, i: int) -> int:
-        """
-        Returns the index of the parent node for the given index.
+        """Returns the index of the parent node for the given index.
 
         Args:
         - i (int): The index of the node.
@@ -47,8 +44,7 @@ class Heap:
         return (i - 1) // 2
 
     def min_heapify(self, i: int):
-        """
-        Rearranges the elements in the heap to maintain the min-heap property.
+        """Rearranges the elements in the heap to maintain the min-heap property.
 
         Args:
             i (int): Index of the element to start heapify from.
@@ -66,8 +62,7 @@ class Heap:
             self.min_heapify(largest)
 
     def push(self, item: tuple[int, float, int]):
-        """
-        Pushes an item into the heap.
+        """Pushes an item into the heap.
 
         Args:
         - item (tuple[int, float, int]): The item to be pushed into the heap.
@@ -85,8 +80,7 @@ class Heap:
             i = self.parent(i)
 
     def pop(self) -> tuple[int, float, int]:
-        """
-        Removes and returns the minimum element from the heap.
+        """Removes and returns the minimum element from the heap.
 
         Returns:
             A tuple containing the minimum element's attributes: (id, value, priority).
@@ -100,8 +94,7 @@ class Heap:
         return ret
 
     def peek(self) -> tuple[int, float, int]:
-        """
-        Returns the top element of the heap without removing it.
+        """Returns the top element of the heap without removing it.
 
         Returns:
             tuple[int, float, int]: The top element of the heap.
@@ -109,9 +102,7 @@ class Heap:
         return self.heap[0]
 
     def __len__(self):
-        """
-        Returns the number of elements in the heap.
-        """
+        """Returns the number of elements in the heap."""
         return len(self.heap)
 
     def __iter__(self):

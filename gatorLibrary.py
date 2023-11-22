@@ -7,8 +7,7 @@ import sys
 
 
 class NodeData:
-    """
-    Represents the data of a book node in the library.
+    """Represents the data of a book node in the library.
 
     Attributes:
         book_id (int): The ID of the book.
@@ -30,9 +29,7 @@ class NodeData:
         self.reservation_heap: Heap = Heap()
 
     def __str__(self) -> str:
-        """
-        Returns a string representation of the Book object.
-        """
+        """Returns a string representation of the Book object."""
         ret = []
         ret.append(f"BookID = {self.book_id}")
         ret.append(f'Title = "{self.book_name}"')
@@ -66,8 +63,7 @@ def PrintBook(bookId: int):
 
 
 def BorrowBook(patronID: int, bookID: int, patronPriority: int):
-    """
-    Borrow a book from the library.
+    """Borrow a book from the library.
 
     Args:
     - patronID (int): The ID of the patron borrowing the book.
@@ -95,8 +91,7 @@ def InsertBook(
     authorName: str,
     availablilityStatus: str,
 ):
-    """
-    Inserts a book into the library.
+    """Inserts a book into the library.
 
     Parameters:
     - bookID (int): The ID of the book.
@@ -110,8 +105,7 @@ def InsertBook(
 
 
 def ReturnBook(patronID: int, bookID: int):
-    """
-    Returns a book to the library and updates its availability status.
+    """Returns a book to the library and updates its availability status.
 
     Args:
     - patronID (int): The ID of the patron returning the book.
@@ -133,8 +127,7 @@ def ReturnBook(patronID: int, bookID: int):
 
 
 def FindClosestBook(bookID: int):
-    """
-    Finds the closest books to the given bookID and prints the data of the closest books.
+    """Finds the closest books to the given bookID and prints the data of the closest books.
 
     Parameters:
     - bookID (int): The ID of the book to find the closest books for.
@@ -147,8 +140,7 @@ def FindClosestBook(bookID: int):
 
 
 def DeleteBook(bookID: int):
-    """
-    Deletes a book from the library.
+    """Deletes a book from the library.
 
     Parameters:
     - bookID (int): The ID of the book to be deleted.
@@ -176,9 +168,7 @@ def DeleteBook(bookID: int):
 
 
 def Quit():
-    """
-    Terminates the program and prints a message.
-    """
+    """Terminates the program and prints a message."""
     print("Program Terminated!!")
 
     tree.visualize_binary_tree("tree")
@@ -186,8 +176,7 @@ def Quit():
 
 
 def ColorFlipCount():
-    """
-    Prints the color flip count of the tree.
+    """Prints the color flip count of the tree.
 
     This function prints the color flip count of the tree.
     """
@@ -195,8 +184,7 @@ def ColorFlipCount():
 
 
 def PrintBooks(bookID1: int, bookID2: int):
-    """
-    Prints the books within the range of book IDs specified.
+    """Prints the books within the range of book IDs specified.
 
     Parameters:
     bookID1 (int): The starting book ID of the range.
@@ -212,7 +200,7 @@ if len(sys.argv) > 1:
     input_file = open(filename, "r")
 
     # output_filename: str = str(filename.split(".")[0] + "_output_file.txt")
-    output_filename = str(filename) + "_output_file.txt"
+    output_filename = str(filename).split(".")[0] + "_output_file.txt"
     sys.stdout = open(output_filename, "w")
 else:
     input_file = sys.stdin

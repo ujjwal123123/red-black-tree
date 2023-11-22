@@ -21,3 +21,10 @@ test3:
 
 test4:
 	python3 gatorLibrary.py < testcases/testcase4 | sdiff -WZi testcases/testcase4.output -
+
+diagrams:
+	pyreverse -o png -d images -p gatorLibrary gatorLibrary.py
+	pyreverse -o png -d images -p heap heap.py
+	pyreverse -o png -d images -p tree tree.py
+
+	pyreverse -o png -d images -p all gatorLibrary.py heap.py tree.py
