@@ -1,7 +1,15 @@
-# Red-Black Tree and Binary Min-Heap
+---
+geometry: margin=30mm
+date: \today
+author: |
+  | Ujjwal Goel
+  | ujjwalgoel@ufl.edu
+  | UFID: 8247-9467
+title: Red-Black Tree and Binary Min-Heap
+subtitle: Project for Advanced Data Structures (COP5536)
+...
 
-Submitted by Ujjwal Goel (UFID: 8247-9467) for Advanced Data Structures
-(COP5536).
+# Red-Black Tree and Binary Min-Heap
 
 In this project, I have implemented a Red-Black Tree and a Binary Min-Heap.
 These two data structures are used to implement a library management system.
@@ -206,7 +214,7 @@ These are the methods in the `Heap` class:
 - `peek`: This method returns the minimum element from the heap. $O(1)$ time
   complexity.
 
-### Testing the min-heap
+#### Testing the min-heap
 
 The binary min-heap can be tested separately using the following command:
 
@@ -215,3 +223,24 @@ python3 heap.py
 >>> push 1
 >>> push 2
 >>> pop 2
+```
+
+### Library management system (`gatorLibrary.py`)
+
+The library management system is implemented in the file `gatorLibrary.py`. This file uses the red-black tree and the binary min-heap to implement the library management system. Following is a list of functions in the file:
+
+- `PrintBook`: This function prints the details of a book.
+- `BorrowBook`: This function assigns a book to a patron
+- `InsertBook`: This function inserts a new book in the library and initializes
+  the heap for the book.
+- `DeleteBook`: This function deletes a book from the library.
+- `ReturnBook`: This function returns a book to the library.
+- `FindClosestBook`: This function finds the book with the closest key to the
+  given key using the method `find_closest` of the red-black tree.
+- `Quit`: This function quits the program.
+- `ColorFlipCount`: This function prints the color flip count of the red-black
+  tree by assessing the `flip_count` varible of the red-black tree.
+- `PrintBooks`: This function prints the details of all the books in the library
+  using the `range_search` method of the red-black tree.
+
+This file is also responsible for reading the input file, parsing it and creating the output. Since the input format is compatible with Python's syntax, `eval` function is used to parse the input file.

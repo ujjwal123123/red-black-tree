@@ -26,5 +26,7 @@ diagrams:
 	pyreverse -o png -d images -p gatorLibrary gatorLibrary.py
 	pyreverse -o png -d images -p heap heap.py
 	pyreverse -o png -d images -p tree tree.py
-
 	pyreverse -o png -d images -p all gatorLibrary.py heap.py tree.py
+
+pdf:
+	pandoc -o README.pdf README.md --pdf-engine=tectonic
