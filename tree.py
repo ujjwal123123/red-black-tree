@@ -35,6 +35,14 @@ class TreeNode:
 
 
 class SentinelNode(TreeNode):
+    """
+    Represents a sentinel node in a tree.
+
+    A sentinel node is a special node used in tree data structures to represent
+    the absence of a real node. It is typically used to simplify the implementation
+    of various tree operations.
+    """
+
     def __init__(self) -> None:
         super().__init__(-1, None, Color.BLACK)
 
@@ -68,6 +76,17 @@ class Tree:
     def update_color_flips(
         self, before: dict[int, Color], after: dict[int, Color]
     ) -> int:
+        """
+        Updates the color flips count based on the changes between the 'before' and 'after' dictionaries.
+
+        Args:
+            before (dict[int, Color]): The dictionary representing the colors before the update.
+            after (dict[int, Color]): The dictionary representing the colors after the update.
+
+        Returns:
+            int: The number of color flips that occurred.
+
+        """
         ans = 0
         for key in before.keys():
             if key in after.keys() and before[key] != after[key]:
@@ -110,6 +129,12 @@ class Tree:
         y.left = x
 
     def right_rotate(self, y: TreeNode):
+        """
+        Performs a right rotation on the given node 'y' in the tree.
+
+        Args:
+            y (TreeNode): The node to be rotated.
+        """
         x = y.left
         if x is self.sentinel:
             return y
@@ -137,6 +162,16 @@ class Tree:
         x.right = y
 
     def insert(self, key: int, value) -> TreeNode:
+        """
+        Inserts a new node with the given key and value into the tree.
+
+        Args:
+            key (int): The key of the new node.
+            value: The value of the new node.
+
+        Returns:
+            TreeNode: The newly inserted node.
+        """
         colors_before = self.get_colors()
         # binary search
         parent: None | TreeNode = None
@@ -172,6 +207,15 @@ class Tree:
         return new_node
 
     def _insert_fixup(self, node: TreeNode) -> None:
+        """
+        Performs the fixup process after inserting a node into the red-black tree.
+
+        Args:
+            node (TreeNode): The newly inserted node.
+
+        Returns:
+            None
+        """
         while node.p and node.p.color == Color.RED:
             if node.p == node.p.p.left:
                 y = node.p.p.right  # uncle
@@ -208,7 +252,16 @@ class Tree:
         self.root_node.color = Color.BLACK
 
     def transplant(self, u: TreeNode, v: TreeNode) -> None:
-        """Replaces subtree rooted at u with subtree rooted at v"""
+        """
+        Replaces the subtree rooted at node u with the subtree rooted at node v.
+
+        Args:
+            u (TreeNode): The node whose subtree is to be replaced.
+            v (TreeNode): The root node of the subtree to replace with.
+
+        Returns:
+            None
+        """
         if u.p is None or u.p is self.sentinel:
             self.root_node = v
         elif u == u.p.left:
@@ -219,11 +272,30 @@ class Tree:
         v.p = u.p
 
     def _flip_color(self, node: TreeNode, color: Color) -> None:
+        """
+        Flips the color of the given node to the specified color.
+
+        Args:
+            node (TreeNode): The node whose color needs to be flipped.
+            color (Color): The color to which the node's color needs to be flipped.
+
+        Returns:
+            None
+        """
         if not node or node is self.sentinel or node.color == color:
             return
         node.color = color
 
     def delete(self, key):
+        """
+        Deletes a node with the given key from the tree.
+
+        Args:
+            key: The key of the node to be deleted.
+
+        Returns:
+            None
+        """
         colors_before = self.get_colors()
         z: TreeNode | None = self.search(key)
         assert z and z is not self.sentinel
@@ -261,6 +333,15 @@ class Tree:
         self.update_color_flips(colors_before, colors_after)
 
     def _delete_fixup(self, node: TreeNode):
+        """
+        Performs the fixup process after deleting a node in the red-black tree.
+
+        Args:
+            node (TreeNode): The node to start the fixup process from.
+
+        Returns:
+            None
+        """
         while node != self.root_node and node.color == Color.BLACK:
             assert node.p
 
@@ -316,6 +397,15 @@ class Tree:
         self._flip_color(node, Color.BLACK)
 
     def search(self, key: int) -> TreeNode:
+        """
+        Search for a node with the given key in the tree.
+
+        Args:
+            key (int): The key to search for.
+
+        Returns:
+            TreeNode: The node with the given key, or None if not found.
+        """
         node = self.root_node
         while node is not self.sentinel:
             if node.key == key:
@@ -325,7 +415,7 @@ class Tree:
             else:
                 node = node.left
 
-        return node
+        return None
 
     def _minimum(self, node: TreeNode) -> TreeNode:
         while node.left is not self.sentinel:
@@ -333,7 +423,20 @@ class Tree:
         return node
 
     def find_closest(self, key: int) -> list[TreeNode]:
+        """
+        Finds the closest nodes to the given key in the tree.
+
+        Args:
+            key (int): The key to find the closest nodes for.
+
+        Returns:
+            list[TreeNode]: A list of TreeNode objects representing the closest nodes.
+        """
+
         def find_lesser(node: TreeNode) -> TreeNode:
+            """
+            Finds the node with the greatest key that is less than the given node's key.
+            """
             ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
@@ -347,6 +450,9 @@ class Tree:
             return ans
 
         def find_greater(node: TreeNode) -> TreeNode:
+            """
+            Finds the first node in the tree that has a key greater than the given node's key.
+            """
             ans = self.sentinel
             while node and node is not self.sentinel:
                 if node.key == key:
@@ -379,7 +485,15 @@ class Tree:
 
     def range_search(self, start: int, end: int) -> list[TreeNode]:
         """Returns a list of nodes whose keys are in the range [start, end]
-        (inclusive)"""
+        (inclusive)
+
+        Args:
+            start (int): The starting key of the range.
+            end (int): The ending key of the range.
+
+        Returns:
+            list[TreeNode]: A list of nodes whose keys are in the specified range.
+        """
 
         def helper(node) -> list[TreeNode]:
             if node is self.sentinel:
@@ -394,6 +508,16 @@ class Tree:
         return helper(self.root_node)
 
     def visualize_binary_tree(self, file_name):
+        """
+        Visualizes the binary tree and saves the visualization as an image file
+        using graphviz.
+
+        Args:
+            file_name (str): The name of the output image file.
+
+        Returns:
+            None
+        """
         spec = importlib.util.find_spec("graphviz")
         if spec is None:
             return
@@ -455,6 +579,7 @@ class Tree:
         dot.render(file_name, view=False, format="png")
 
 
+# TUI for testing
 if __name__ == "__main__":
     tree = Tree()
 
